@@ -49,9 +49,56 @@
 ;
 ; Your goal is to write the score method.
 
+(defun score-rec (dice-lst one two three four five six)
+  (if (equal dice-lst nil)
+    (list one 
+          (if (< two   3) 0 two)
+          (if (< three 3) 0 three)
+          (if (< four  3) 0 four)
+          five 
+          (if (< six   3) 0 six))
+    
+    (let ((num (car dice-lst)))
+      (score-rec (cdr dice-lst) 
+               (if (= num 1) (1+ one)   one)
+               (if (= num 2) (1+ two)   two)
+               (if (= num 3) (1+ three) three)
+               (if (= num 4) (1+ four)  four)
+               (if (= num 5) (1+ five)  five)
+               (if (= num 6) (1+ six)   six)))))
+
+(defun caddddr (lst)
+  (cadr (cdddr lst)))
+
+(defun cadddddr (lst)
+  (caddr (cdddr lst)))
+
 (defun score (dice)
-  ; You need to write this method
-)
+  (if (equal nil dice)
+    0
+    (let ((counts (score-rec dice 0 0 0 0 0 0)))
+      (+  
+         ;; ONE 
+         (+ (* (floor (/ (car counts) 3)) 1000)
+            (* (mod (car counts) 3) 100))
+
+         ;; TWO
+         (* (floor (/ (cadr     counts) 3)) 200)
+
+         ;; THREE
+         (* (floor (/ (caddr    counts) 3)) 300)
+
+         ;; FOUR
+         (* (floor (/ (cadddr   counts) 3)) 400)
+
+         ;; FIVE
+         (+ (* (floor (/ (caddddr counts) 3)) 500)
+            (* (mod (caddddr counts) 3) 50))
+
+         ;; SIX
+         (* (floor (/ (cadddddr counts) 3)) 600)
+      )))
+  )
 
 (define-test test-score-of-an-empty-list-is-zero
     (assert-equal 0 (score nil)))
